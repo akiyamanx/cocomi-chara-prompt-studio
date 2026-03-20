@@ -1,0 +1,197 @@
+<!-- COCOMI CharaPrompt Studio (CPS) - メインUI -->
+<!-- COCOMIファミリーのキャラクタープロンプト生成PWAアプリ -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>COCOMI CharaPrompt Studio</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#7F77DD">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ヘッダー -->
+  <header id="app-header">
+    <div class="header-left">
+      <svg class="logo-icon" viewBox="0 0 32 32" width="28" height="28">
+        <circle cx="16" cy="16" r="14" fill="#7F77DD"/>
+        <text x="16" y="21" text-anchor="middle" fill="#fff" font-size="14" font-weight="bold">C</text>
+      </svg>
+      <h1>CPS</h1>
+    </div>
+    <div class="header-right">
+      <button id="btn-saved" class="icon-btn" title="保存キャラ一覧">📋</button>
+      <button id="btn-reset" class="icon-btn" title="リセット">🔄</button>
+    </div>
+  </header>
+
+  <!-- モード切り替え -->
+  <section id="mode-toggle" class="card">
+    <div class="mode-switch">
+      <button id="mode-anime" class="mode-btn active" data-mode="anime">🎨 アニメ・イラスト</button>
+      <button id="mode-photo" class="mode-btn" data-mode="photo">📷 実写・フォトリアル</button>
+    </div>
+  </section>
+
+  <!-- 三姉妹プリセット -->
+  <section id="presets-section" class="card">
+    <h2 class="section-title">👧 三姉妹プリセット</h2>
+    <div class="preset-btns">
+      <button class="preset-btn cocomi" data-preset="cocomi">🩵 ここちゃん</button>
+      <button class="preset-btn oneechan" data-preset="oneechan">🤍 お姉ちゃん</button>
+      <button class="preset-btn kuro" data-preset="kuro">💜 クロちゃん</button>
+    </div>
+  </section>
+
+  <!-- メインフォーム - 各セクション -->
+  <main id="form-container">
+    <!-- 基本スタイル -->
+    <section class="card" data-category="basic">
+      <h2 class="section-title" data-toggle="basic">🎭 基本スタイル <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-basic"></div>
+    </section>
+
+    <!-- プロポーション・体型 -->
+    <section class="card" data-category="proportion">
+      <h2 class="section-title" data-toggle="proportion">📐 プロポーション・体型 <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-proportion"></div>
+    </section>
+
+    <!-- 髪型・髪質 -->
+    <section class="card" data-category="hair">
+      <h2 class="section-title" data-toggle="hair">💇 髪型・髪質 <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-hair"></div>
+    </section>
+
+    <!-- 目・顔パーツ -->
+    <section class="card" data-category="face">
+      <h2 class="section-title" data-toggle="face">👁 目・顔パーツ <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-face"></div>
+    </section>
+
+    <!-- 肌・体のパーツ -->
+    <section class="card" data-category="skin">
+      <h2 class="section-title" data-toggle="skin">✋ 肌・体のパーツ <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-skin"></div>
+    </section>
+
+    <!-- ファッション -->
+    <section class="card" data-category="fashion">
+      <h2 class="section-title" data-toggle="fashion">👗 ファッション <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-fashion"></div>
+    </section>
+
+    <!-- アクセサリー（タグ複数選択） -->
+    <section class="card" data-category="accessory">
+      <h2 class="section-title" data-toggle="accessory">💍 アクセサリー <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-accessory"></div>
+    </section>
+
+    <!-- ポーズ・動き -->
+    <section class="card" data-category="pose">
+      <h2 class="section-title" data-toggle="pose">🏃 ポーズ・動き <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-pose"></div>
+    </section>
+
+    <!-- 背景・構図 -->
+    <section class="card" data-category="background">
+      <h2 class="section-title" data-toggle="background">🏞 背景・構図 <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-background"></div>
+    </section>
+
+    <!-- ライティング（アニメモード専用） -->
+    <section class="card anime-only" data-category="lighting">
+      <h2 class="section-title" data-toggle="lighting">💡 ライティング <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-lighting"></div>
+    </section>
+
+    <!-- 実写モード専用設定 -->
+    <section class="card photo-only" data-category="camera">
+      <h2 class="section-title" data-toggle="camera">📸 実写モード設定 <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-camera"></div>
+    </section>
+
+    <!-- チャームポイント（タグ複数選択） -->
+    <section class="card" data-category="charm">
+      <h2 class="section-title" data-toggle="charm">✨ チャームポイント <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-charm"></div>
+    </section>
+  </main>
+
+  <!-- キャラ一貫性オプション -->
+  <section id="consistency-section" class="card">
+    <h2 class="section-title">🔒 キャラ一貫性キーワード</h2>
+    <div class="consistency-checks">
+      <label><input type="checkbox" id="ck-same-face" checked> same face / same character</label>
+      <label><input type="checkbox" id="ck-same-hair"> identical hairstyle & color</label>
+      <label><input type="checkbox" id="ck-same-outfit"> same outfit</label>
+      <label><input type="checkbox" id="ck-same-eyes"> identical eye color & shape</label>
+      <label><input type="checkbox" id="ck-correct-hands"> correct hand anatomy (5 fingers)</label>
+    </div>
+  </section>
+
+  <!-- 出力セクション -->
+  <section id="output-section" class="card">
+    <div class="output-btns">
+      <button id="btn-generate" class="primary-btn">🚀 プロンプト生成</button>
+      <button id="btn-save" class="secondary-btn">💾 キャラ保存</button>
+    </div>
+    <div id="output-en" class="output-box" style="display:none">
+      <h3>🇬🇧 English Prompt</h3>
+      <pre id="prompt-en"></pre>
+      <button class="copy-btn" data-target="prompt-en">📋 コピー</button>
+    </div>
+    <div id="output-ja" class="output-box" style="display:none">
+      <h3>🇯🇵 日本語メモ</h3>
+      <pre id="prompt-ja"></pre>
+      <button class="copy-btn" data-target="prompt-ja">📋 コピー</button>
+    </div>
+  </section>
+
+  <!-- 保存キャラ一覧モーダル -->
+  <div id="modal-saved" class="modal" style="display:none">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📋 保存キャラ一覧</h2>
+        <button id="modal-close" class="icon-btn">✕</button>
+      </div>
+      <div id="saved-list" class="saved-list"></div>
+    </div>
+  </div>
+
+  <!-- キャラ名入力モーダル -->
+  <div id="modal-name" class="modal" style="display:none">
+    <div class="modal-content modal-small">
+      <h2>💾 キャラクター名を入力</h2>
+      <input type="text" id="input-chara-name" placeholder="キャラクター名" maxlength="50">
+      <textarea id="input-chara-notes" placeholder="メモ（任意）" rows="2" maxlength="200"></textarea>
+      <div class="modal-btns">
+        <button id="btn-save-confirm" class="primary-btn">保存</button>
+        <button id="btn-save-cancel" class="secondary-btn">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- トースト通知 -->
+  <div id="toast" class="toast"></div>
+
+  <footer>
+    <p>COCOMI CharaPrompt Studio v1.0 🔮 COCOMIファミリー</p>
+  </footer>
+
+  <script src="presets.js"></script>
+  <script src="db.js"></script>
+  <script src="app.js"></script>
+  <script>
+    // Service Worker登録
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW登録失敗:', e));
+    }
+  </script>
+</body>
+</html>
