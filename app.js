@@ -234,7 +234,8 @@ function generatePrompt() {
   const charaParts = [];
   const bgPartsInline = [];
   Object.entries(values).forEach(([k, v]) => {
-    const en = M[v] || BG_EN[v];
+    // キー付きマップ→通常マップ→背景マップの順で検索
+    const en = (MK[k] && MK[k][v]) || M[v] || BG_EN[v];
     if (!en) return;
     if (bgKeys.has(k)) { bgPartsInline.push(en); }
     else { charaParts.push(en); }

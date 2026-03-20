@@ -29,7 +29,7 @@ const M = {
   'スリム・細め':'slim slender','標準バランス':'average build','ぽっちゃり・丸み':'plump curvy',
   '筋肉質・アスリート':'muscular athletic','小柄・幼め':'petite small','高身長・すらっと':'tall slender',
   // バスト
-  '小さめ・フラット':'flat chest','やや小さめ':'small bust','標準':'medium bust',
+  '小さめ・フラット':'flat chest','やや小さめ':'small bust',
   'やや大きめ':'slightly large bust','大きめ':'large bust','非常に大きめ':'very large bust',
   // ウエスト
   '非常に細い':'very thin waist','細め':'slim waist','やや太め':'slightly wide waist',
@@ -423,5 +423,16 @@ const PRESETS = {
     accessories: [],
     charms: ['オッドアイ','ほくろ','触角ヘア']
   }
+};
+
+// === フィールドキー付き変換マップ（「標準」など重複値の解決用） ===
+// M[値]で見つからない場合、MK[フィールドキー][値]で引く
+const MK = {
+  bust:     { '標準':'medium bust' },
+  waist:    { '標準':'medium waist' },
+  hip:      { '標準':'medium hips' },
+  legLen:   { '標準':'medium length legs' },
+  torsoLen: { '標準':'average torso' },
+  waistPos: { '標準':'normal waist position' }
 };
 
