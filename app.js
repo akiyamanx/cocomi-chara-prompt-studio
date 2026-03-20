@@ -126,6 +126,10 @@ function setupEventListeners() {
   });
   // リセット
   document.getElementById('btn-reset').addEventListener('click', resetAll);
+  // エクスポート/インポート
+  document.getElementById('btn-export').addEventListener('click', exportAllCharacters);
+  document.getElementById('btn-import').addEventListener('click', () => el('file-import').click());
+  document.getElementById('file-import').addEventListener('change', importCharacters);
   // コピーボタン
   document.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -412,6 +416,54 @@ function loadCharacter(c) {
   if (c.promptJa) { el('prompt-ja').textContent = c.promptJa; el('output-ja').style.display = 'block'; }
   el('modal-saved').style.display = 'none';
   showToast(`「${c.name}」を読み込みました！`);
+}
+
+// === エクスポート（全キャラをJSONダウンロード） ===
+async function exportAllCharacters() {
+  try {
+    const chars = await getAllCharacters();
+    if (chars.length === 0) { showToast('エクスポートするキャラがありません'); return; }
+    const data = { version: '1.1', exportedAt: new Date().toISOString(), characters: chars };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `cps-backup-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showToast(`${chars.length}件のキャラをエクスポートしました！📤`);
+  } catch (e) { console.error('エクスポートエラー:', e); showToast('エクスポートに失敗しました'); }
+}
+
+// === インポート（JSONファイルから復元） ===
+async function importCharacters(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const data = JSON.parse(text);
+    // バリデーション
+    if (!data.characters || !Array.isArray(data.characters)) {
+      showToast('無効なファイル形式です'); return;
+    }
+    let count = 0;
+    for (const c of data.characters) {
+      if (c.name && c.values) {
+        await saveCharacter(c);
+        count++;
+      }
+    }
+    showToast(`${count}件のキャラをインポートしました！📥`);
+    loadMyPresets();
+    showSavedList(); // 一覧を再表示
+  } catch (err) {
+    console.error('インポートエラー:', err);
+    showToast('インポートに失敗しました');
+  }
+  // ファイル入力リセット（同じファイルを再選択できるように）
+  e.target.value = '';
 }
 
 // === ユーティリティ ===

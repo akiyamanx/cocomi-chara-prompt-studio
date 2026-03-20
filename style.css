@@ -241,3 +241,15 @@ footer {
 
 /* アニメーションのモード表示切り替え */
 .photo-only, .anime-only { transition: opacity 0.3s; }
+
+/* エクスポート/インポートバー */
+.export-import-bar {
+  display: flex; gap: 8px; margin-bottom: 12px;
+  padding-bottom: 10px; border-bottom: 1px solid var(--border);
+}
+.bar-btn {
+  flex: 1; padding: 8px; border-radius: 8px; font-size: 0.82rem;
+  font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+  background: transparent; color: var(--text-dim); transition: all 0.2s;
+}
+.bar-btn:active { background: var(--accent-glow); color: var(--text); }
