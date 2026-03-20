@@ -199,8 +199,12 @@ async function loadMyPresets() {
   } catch (e) { console.warn('マイキャラ読み込みエラー:', e); }
 }
 
-// === マイキャラ選択ピッカー ===
-async function showMyCharaPicker() { showSavedList(); }
+// === 新キャラ作成（リセットしてフォームの先頭へ） ===
+function showMyCharaPicker() {
+  resetAll();
+  document.getElementById('mode-toggle').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showToast('新しいキャラを作ろう！✨');
+}
 
 // === 現在のフォーム値を収集 ===
 function collectValues() {
