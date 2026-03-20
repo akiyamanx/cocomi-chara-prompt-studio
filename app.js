@@ -344,7 +344,7 @@ function resetAll() {
   document.querySelectorAll('.field-select').forEach(sel => sel.value = '');
   selectedAccessories.clear(); selectedCharms.clear();
   document.querySelectorAll('.tag-item').forEach(btn => btn.classList.remove('selected'));
-  ['output-en','output-ja','output-bg','output-combined','output-neg'].forEach(id => el(id).style.display = 'none');
+  ['output-en','output-ja','output-bg','output-combined','output-neg','output-ai','output-ai-neg'].forEach(id => el(id).style.display = 'none');
   // 一貫性リセット
   el('ck-same-face').checked = true;
   ['ck-same-hair','ck-same-outfit','ck-same-eyes','ck-correct-hands'].forEach(id => el(id).checked = false);

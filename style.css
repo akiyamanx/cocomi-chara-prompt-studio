@@ -289,3 +289,21 @@ footer {
   resize: none;
 }
 .custom-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
+
+/* v1.5追加 - AI整形ボタン */
+.accent-btn {
+  padding: 12px 16px; border: none; border-radius: 10px; font-size: 0.95rem;
+  font-weight: 700; cursor: pointer; transition: all 0.2s;
+  background: linear-gradient(135deg, #ff6fd8 0%, #9f6fff 100%);
+  color: #fff; flex: 1;
+}
+.accent-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.accent-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* v1.5追加 - AI整形結果の出力ボックス（グラデーション枠で差別化） */
+.output-box.ai-refined {
+  border: 1.5px solid transparent;
+  background-image: linear-gradient(#1a1933, #1a1933), linear-gradient(135deg, #ff6fd8, #9f6fff);
+  background-origin: border-box; background-clip: padding-box, border-box;
+}
+.output-box.ai-refined h3 { color: #ff6fd8; }

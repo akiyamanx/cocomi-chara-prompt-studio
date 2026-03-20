@@ -225,6 +225,7 @@
   <section id="output-section" class="card">
     <div class="output-btns">
       <button id="btn-generate" class="primary-btn">🚀 プロンプト生成</button>
+      <button id="btn-ai-refine" class="accent-btn">✨ AI整形</button>
       <button id="btn-save" class="secondary-btn">💾 キャラ保存</button>
     </div>
     <div id="output-en" class="output-box" style="display:none">
@@ -236,6 +237,16 @@
       <h3>🚫 Negative Prompt（除外）</h3>
       <pre id="prompt-neg"></pre>
       <button class="copy-btn" data-target="prompt-neg">📋 コピー</button>
+    </div>
+    <div id="output-ai" class="output-box ai-refined" style="display:none">
+      <h3>✨ AI Refined Prompt</h3>
+      <pre id="prompt-ai"></pre>
+      <button class="copy-btn" data-target="prompt-ai">📋 コピー</button>
+    </div>
+    <div id="output-ai-neg" class="output-box ai-refined" style="display:none">
+      <h3>✨ AI Refined Negative</h3>
+      <pre id="prompt-ai-neg"></pre>
+      <button class="copy-btn" data-target="prompt-ai-neg">📋 コピー</button>
     </div>
     <div id="output-bg" class="output-box" style="display:none">
       <h3>🏠 Background Prompt（背景のみ）</h3>
@@ -287,12 +298,13 @@
   <div id="toast" class="toast"></div>
 
   <footer>
-    <p>COCOMI CharaPrompt Studio v1.0 🔮 COCOMIファミリー</p>
+    <p>COCOMI CharaPrompt Studio v1.5 🔮 COCOMIファミリー</p>
   </footer>
 
   <script src="presets.js"></script>
   <script src="bg-data.js"></script>
   <script src="db.js"></script>
+  <script src="ai-engine.js"></script>
   <script src="app.js"></script>
   <script>
     // Service Worker登録
