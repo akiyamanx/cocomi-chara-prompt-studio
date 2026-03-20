@@ -118,3 +118,30 @@ async function fetchFromD1() {
 // POST /api/cps/characters        → キャラ保存
 // PUT  /api/cps/characters/:id    → キャラ更新
 // DELETE /api/cps/characters/:id  → キャラ削除
+
+// === エクスポート（全キャラをJSONダウンロード） ===
+async function exportAllCharacters() {
+  const chars = await getAllCharacters();
+  if (chars.length === 0) throw new Error('no data');
+  const data = { version: '1.4', exportedAt: new Date().toISOString(), characters: chars };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `cps-backup-${new Date().toISOString().slice(0,10)}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  return chars.length;
+}
+
+// === インポート（JSONデータから復元） ===
+async function importCharactersFromData(data) {
+  if (!data.characters || !Array.isArray(data.characters)) throw new Error('invalid format');
+  let count = 0;
+  for (const c of data.characters) {
+    if (c.name && c.values) { await saveCharacter(c); count++; }
+  }
+  return count;
+}

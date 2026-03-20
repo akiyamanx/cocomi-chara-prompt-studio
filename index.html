@@ -133,15 +133,91 @@
     </section>
   </main>
 
-  <!-- キャラ一貫性オプション -->
-  <section id="consistency-section" class="card">
-    <h2 class="section-title">🔒 キャラ一貫性キーワード</h2>
-    <div class="consistency-checks">
-      <label><input type="checkbox" id="ck-same-face" checked> same face / same character</label>
-      <label><input type="checkbox" id="ck-same-hair"> identical hairstyle & color</label>
-      <label><input type="checkbox" id="ck-same-outfit"> same outfit</label>
-      <label><input type="checkbox" id="ck-same-eyes"> identical eye color & shape</label>
-      <label><input type="checkbox" id="ck-correct-hands"> correct hand anatomy (5 fingers)</label>
+  <!-- プロンプト設定（一貫性・品質・ネガティブ・ウェイト・自由入力） -->
+  <section id="prompt-settings" class="card">
+    <h2 class="section-title" data-toggle="psettings">⚙ プロンプト設定 <span class="toggle-icon">▼</span></h2>
+    <div class="section-body" id="sec-psettings">
+
+      <!-- 品質ブースター -->
+      <div class="subsection">
+        <h3 class="sub-title">🏆 品質ブースター</h3>
+        <div class="consistency-checks">
+          <label><input type="checkbox" id="ck-masterpiece" checked> masterpiece, best quality</label>
+          <label><input type="checkbox" id="ck-detailed" checked> highly detailed, ultra-detailed</label>
+          <label><input type="checkbox" id="ck-sharp"> sharp focus, 8k resolution</label>
+        </div>
+      </div>
+
+      <!-- アスペクト比 -->
+      <div class="subsection">
+        <h3 class="sub-title">📐 アスペクト比</h3>
+        <div class="aspect-btns">
+          <button class="aspect-btn active" data-ratio="">指定なし</button>
+          <button class="aspect-btn" data-ratio="1:1">1:1 正方形</button>
+          <button class="aspect-btn" data-ratio="2:3">2:3 縦長</button>
+          <button class="aspect-btn" data-ratio="3:2">3:2 横長</button>
+          <button class="aspect-btn" data-ratio="9:16">9:16 スマホ</button>
+        </div>
+      </div>
+
+      <!-- キャラ一貫性 -->
+      <div class="subsection">
+        <h3 class="sub-title">🔒 キャラ一貫性</h3>
+        <div class="consistency-checks">
+          <label><input type="checkbox" id="ck-same-face" checked> same face / same character</label>
+          <label><input type="checkbox" id="ck-same-hair"> identical hairstyle & color</label>
+          <label><input type="checkbox" id="ck-same-outfit"> same outfit</label>
+          <label><input type="checkbox" id="ck-same-eyes"> identical eye color & shape</label>
+          <label><input type="checkbox" id="ck-correct-hands"> correct hand anatomy (5 fingers)</label>
+        </div>
+      </div>
+
+      <!-- ネガティブプロンプト -->
+      <div class="subsection">
+        <h3 class="sub-title">🚫 ネガティブプロンプト（除外）</h3>
+        <div class="consistency-checks">
+          <label><input type="checkbox" id="neg-anatomy" checked> bad anatomy, extra fingers</label>
+          <label><input type="checkbox" id="neg-quality" checked> low quality, blurry, ugly</label>
+          <label><input type="checkbox" id="neg-watermark"> watermark, text, signature</label>
+          <label><input type="checkbox" id="neg-deform"> deformed, mutation, disfigured</label>
+          <label><input type="checkbox" id="neg-duplicate"> duplicate, clone, copy</label>
+        </div>
+      </div>
+
+      <!-- 重み付けスライダー -->
+      <div class="subsection">
+        <h3 class="sub-title">⚖ 重み付け強調</h3>
+        <p class="sub-hint">特に固定したいパーツの強調度を上げる</p>
+        <div class="weight-sliders">
+          <div class="weight-row">
+            <label>👁 瞳の色</label>
+            <input type="range" id="w-eyes" min="1.0" max="1.5" step="0.1" value="1.0">
+            <span class="weight-val" id="w-eyes-val">1.0</span>
+          </div>
+          <div class="weight-row">
+            <label>💇 髪型・髪色</label>
+            <input type="range" id="w-hair" min="1.0" max="1.5" step="0.1" value="1.0">
+            <span class="weight-val" id="w-hair-val">1.0</span>
+          </div>
+          <div class="weight-row">
+            <label>👗 服装</label>
+            <input type="range" id="w-outfit" min="1.0" max="1.5" step="0.1" value="1.0">
+            <span class="weight-val" id="w-outfit-val">1.0</span>
+          </div>
+          <div class="weight-row">
+            <label>😊 表情</label>
+            <input type="range" id="w-expr" min="1.0" max="1.5" step="0.1" value="1.0">
+            <span class="weight-val" id="w-expr-val">1.0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 自由入力 -->
+      <div class="subsection">
+        <h3 class="sub-title">✏ 自由入力</h3>
+        <textarea id="custom-prompt" class="custom-input" placeholder="例: holding a blue crystal staff in left hand, butterfly wings on back" rows="3" maxlength="500"></textarea>
+      </div>
+
     </div>
   </section>
 
@@ -155,6 +231,11 @@
       <h3>🇬🇧 English Prompt（キャラ）</h3>
       <pre id="prompt-en"></pre>
       <button class="copy-btn" data-target="prompt-en">📋 コピー</button>
+    </div>
+    <div id="output-neg" class="output-box" style="display:none">
+      <h3>🚫 Negative Prompt（除外）</h3>
+      <pre id="prompt-neg"></pre>
+      <button class="copy-btn" data-target="prompt-neg">📋 コピー</button>
     </div>
     <div id="output-bg" class="output-box" style="display:none">
       <h3>🏠 Background Prompt（背景のみ）</h3>

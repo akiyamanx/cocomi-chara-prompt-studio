@@ -253,3 +253,39 @@ footer {
   background: transparent; color: var(--text-dim); transition: all 0.2s;
 }
 .bar-btn:active { background: var(--accent-glow); color: var(--text); }
+
+/* プロンプト設定 サブセクション */
+.subsection { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid rgba(45,42,80,0.5); }
+.subsection:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.sub-title { font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: var(--accent); }
+.sub-hint { font-size: 0.72rem; color: var(--text-dim); margin-bottom: 6px; }
+
+/* アスペクト比ボタン */
+.aspect-btns { display: flex; gap: 5px; flex-wrap: wrap; }
+.aspect-btn {
+  padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 600;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-dim); cursor: pointer; transition: all 0.2s;
+}
+.aspect-btn.active { border-color: var(--accent); color: var(--text); background: var(--accent-glow); }
+
+/* 重み付けスライダー */
+.weight-sliders { display: flex; flex-direction: column; gap: 8px; }
+.weight-row {
+  display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim);
+}
+.weight-row label { min-width: 90px; font-size: 0.78rem; }
+.weight-row input[type="range"] { flex: 1; accent-color: var(--accent); }
+.weight-val {
+  min-width: 28px; text-align: center; font-weight: 700;
+  font-size: 0.8rem; color: var(--accent);
+}
+
+/* 自由入力 */
+.custom-input {
+  width: 100%; padding: 10px; background: #13122a;
+  border: 1px solid var(--border); border-radius: 8px;
+  color: var(--text); font-size: 0.85rem; font-family: inherit;
+  resize: none;
+}
+.custom-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }

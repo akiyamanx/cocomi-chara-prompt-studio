@@ -33,36 +33,24 @@ function buildAllSections() {
       container.appendChild(row);
     });
   });
-  // アクセサリータグ
-  const accCont = document.getElementById('sec-accessory');
-  if (accCont) {
-    const wrap = document.createElement('div');
-    wrap.className = 'tag-container';
-    ACCESSORY_TAGS.forEach(tag => {
-      const btn = document.createElement('button');
-      btn.className = 'tag-item';
-      btn.textContent = tag;
-      btn.dataset.tag = tag;
-      btn.addEventListener('click', () => toggleTag(btn, tag, selectedAccessories));
-      wrap.appendChild(btn);
-    });
-    accCont.appendChild(wrap);
-  }
-  // チャームポイントタグ
-  const charmCont = document.getElementById('sec-charm');
-  if (charmCont) {
-    const wrap = document.createElement('div');
-    wrap.className = 'tag-container';
-    CHARM_TAGS.forEach(tag => {
-      const btn = document.createElement('button');
-      btn.className = 'tag-item';
-      btn.textContent = tag;
-      btn.dataset.tag = tag;
-      btn.addEventListener('click', () => toggleTag(btn, tag, selectedCharms));
-      wrap.appendChild(btn);
-    });
-    charmCont.appendChild(wrap);
-  }
+  // タグ生成（アクセサリー＆チャーム）
+  buildTagSection('sec-accessory', ACCESSORY_TAGS, selectedAccessories);
+  buildTagSection('sec-charm', CHARM_TAGS, selectedCharms);
+}
+
+// === タグセクション生成ヘルパー ===
+function buildTagSection(containerId, tags, set) {
+  const cont = document.getElementById(containerId);
+  if (!cont) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'tag-container';
+  tags.forEach(tag => {
+    const btn = document.createElement('button');
+    btn.className = 'tag-item'; btn.textContent = tag; btn.dataset.tag = tag;
+    btn.addEventListener('click', () => toggleTag(btn, tag, set));
+    wrap.appendChild(btn);
+  });
+  cont.appendChild(wrap);
 }
 
 // === 背景デザイナーUI生成 ===
@@ -127,9 +115,9 @@ function setupEventListeners() {
   // リセット
   document.getElementById('btn-reset').addEventListener('click', resetAll);
   // エクスポート/インポート
-  document.getElementById('btn-export').addEventListener('click', exportAllCharacters);
+  document.getElementById('btn-export').addEventListener('click', doExport);
   document.getElementById('btn-import').addEventListener('click', () => el('file-import').click());
-  document.getElementById('file-import').addEventListener('change', importCharacters);
+  document.getElementById('file-import').addEventListener('change', doImport);
   // コピーボタン
   document.querySelectorAll('.copy-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -144,6 +132,21 @@ function setupEventListeners() {
     modal.addEventListener('click', (e) => {
       if (e.target === modal) modal.style.display = 'none';
     });
+  });
+  // アスペクト比ボタン
+  document.querySelectorAll('.aspect-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.aspect-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+  // 重み付けスライダーの値表示
+  ['w-eyes','w-hair','w-outfit','w-expr'].forEach(id => {
+    const slider = el(id);
+    const valEl = el(id + '-val');
+    if (slider && valEl) {
+      slider.addEventListener('input', () => { valEl.textContent = slider.value; });
+    }
   });
 }
 
@@ -233,18 +236,37 @@ function generatePrompt() {
   const bgKeys = new Set(BG_SECTION.bgdesign.fields.map(f => f.key));
   const charaParts = [];
   const bgPartsInline = [];
+  // ウェイト対象のキーマッピング
+  const weightMap = {
+    eyeColor:'w-eyes', eyeShape:'w-eyes',
+    hairStyle:'w-hair', hairColor:'w-hair', bangs:'w-hair', hairTexture:'w-hair',
+    outfit:'w-outfit', material:'w-outfit', colorTone:'w-outfit',
+    expression:'w-expr', mouth:'w-expr'
+  };
   Object.entries(values).forEach(([k, v]) => {
-    // キー付きマップ→通常マップ→背景マップの順で検索
     const en = (MK[k] && MK[k][v]) || M[v] || BG_EN[v];
     if (!en) return;
-    if (bgKeys.has(k)) { bgPartsInline.push(en); }
-    else { charaParts.push(en); }
+    if (bgKeys.has(k)) { bgPartsInline.push(en); return; }
+    // 重み付け適用
+    const wId = weightMap[k];
+    const wSlider = wId ? el(wId) : null;
+    const w = wSlider ? parseFloat(wSlider.value) : 1.0;
+    charaParts.push(w > 1.0 ? `(${en}:${w.toFixed(1)})` : en);
   });
   selectedAccessories.forEach(tag => { const en = ACCESSORY_EN[tag]; if (en) charaParts.push(en); });
   selectedCharms.forEach(tag => { const en = CHARM_EN[tag]; if (en) charaParts.push(en); });
   if (charaParts.length === 0 && bgPartsInline.length === 0) {
     showToast('項目を選択してください'); return;
   }
+  // 品質ブースター（先頭に挿入）
+  const boosters = [];
+  if (el('ck-masterpiece')?.checked) boosters.push('masterpiece','best quality');
+  if (el('ck-detailed')?.checked) boosters.push('highly detailed','ultra-detailed');
+  if (el('ck-sharp')?.checked) boosters.push('sharp focus','8k resolution');
+  // アスペクト比
+  const aspectBtn = document.querySelector('.aspect-btn.active');
+  const ratio = aspectBtn?.dataset.ratio;
+  if (ratio) boosters.push(`aspect ratio ${ratio}`);
   // 一貫性キーワード
   if (el('ck-same-face')?.checked) charaParts.push('same character','character consistency','same face');
   if (el('ck-same-hair')?.checked) charaParts.push('identical hairstyle','identical hair color and style');
@@ -256,22 +278,42 @@ function generatePrompt() {
   if (currentMode === 'photo') {
     charaParts.push('award winning photography','professional editorial quality');
   }
-  const promptEn = charaParts.join(', ');
+  // 自由入力
+  const custom = el('custom-prompt')?.value.trim();
+  if (custom) charaParts.push(custom);
+  // 最終プロンプト組み立て（品質→キャラ）
+  const allParts = [...boosters, ...charaParts];
+  const promptEn = allParts.join(', ');
+  // ネガティブプロンプト
+  const negParts = [];
+  if (el('neg-anatomy')?.checked) negParts.push('bad anatomy','extra fingers','missing fingers');
+  if (el('neg-quality')?.checked) negParts.push('low quality','blurry','ugly','worst quality');
+  if (el('neg-watermark')?.checked) negParts.push('watermark','text','signature','logo');
+  if (el('neg-deform')?.checked) negParts.push('deformed','mutation','disfigured','malformed');
+  if (el('neg-duplicate')?.checked) negParts.push('duplicate','clone','copy');
+  const negPrompt = negParts.length > 0 ? negParts.join(', ') : '';
+  // 背景プロンプト
   const bgPrompt = generateBgPrompt();
   // 合成プロンプト
   let combinedPrompt = '';
-  if (bgPartsInline.length > 0 && charaParts.length > 0) {
-    combinedPrompt = charaParts.join(', ') + ', ' + bgPartsInline.join(', ') + ', highly detailed background';
+  if (bgPartsInline.length > 0) {
+    combinedPrompt = allParts.join(', ') + ', ' + bgPartsInline.join(', ') + ', highly detailed background';
   }
   // 日本語メモ
   const jaLines = [];
   Object.entries(values).forEach(([k, v]) => { jaLines.push(`${findFieldLabel(k)}: ${v}`); });
   if (selectedAccessories.size > 0) jaLines.push(`アクセサリー: ${[...selectedAccessories].join('、')}`);
   if (selectedCharms.size > 0) jaLines.push(`チャームポイント: ${[...selectedCharms].join('、')}`);
+  if (custom) jaLines.push(`自由入力: ${custom}`);
   jaLines.push(`モード: ${currentMode === 'anime' ? 'アニメ・イラスト' : '実写・フォトリアル'}`);
   // 出力表示
   el('prompt-en').textContent = promptEn;
   el('output-en').style.display = 'block';
+  // ネガティブ表示
+  if (negPrompt) {
+    el('prompt-neg').textContent = negPrompt;
+    el('output-neg').style.display = 'block';
+  } else { el('output-neg').style.display = 'none'; }
   el('prompt-ja').textContent = jaLines.join('\n');
   el('output-ja').style.display = 'block';
   if (bgPrompt) {
@@ -302,9 +344,23 @@ function resetAll() {
   document.querySelectorAll('.field-select').forEach(sel => sel.value = '');
   selectedAccessories.clear(); selectedCharms.clear();
   document.querySelectorAll('.tag-item').forEach(btn => btn.classList.remove('selected'));
-  ['output-en','output-ja','output-bg','output-combined'].forEach(id => el(id).style.display = 'none');
+  ['output-en','output-ja','output-bg','output-combined','output-neg'].forEach(id => el(id).style.display = 'none');
+  // 一貫性リセット
   el('ck-same-face').checked = true;
   ['ck-same-hair','ck-same-outfit','ck-same-eyes','ck-correct-hands'].forEach(id => el(id).checked = false);
+  // 品質ブースターリセット
+  el('ck-masterpiece').checked = true; el('ck-detailed').checked = true; el('ck-sharp').checked = false;
+  // ネガティブリセット
+  el('neg-anatomy').checked = true; el('neg-quality').checked = true;
+  ['neg-watermark','neg-deform','neg-duplicate'].forEach(id => el(id).checked = false);
+  // ウェイトリセット
+  ['w-eyes','w-hair','w-outfit','w-expr'].forEach(id => {
+    el(id).value = '1.0'; el(id + '-val').textContent = '1.0';
+  });
+  // アスペクト比リセット
+  document.querySelectorAll('.aspect-btn').forEach((b,i) => b.classList.toggle('active', i === 0));
+  // 自由入力クリア
+  el('custom-prompt').value = '';
   showToast('リセットしました');
 }
 
@@ -356,27 +412,19 @@ async function showSavedList() {
     chars.forEach(c => {
       const item = document.createElement('div');
       item.className = 'saved-item';
-      const date = new Date(c.updatedAt).toLocaleDateString('ja-JP');
-      const modeLabel = c.mode === 'photo' ? '📷実写' : '🎨アニメ';
-      item.innerHTML = `
-        <div class="saved-item-name">${escHtml(c.name)} ${modeLabel}</div>
-        <div class="saved-item-meta">${date} ${c.notes ? '- ' + escHtml(c.notes) : ''}</div>
-        <div class="saved-item-actions">
-          <button class="load-btn">📥 読み込み</button>
-          <button class="prompt-btn">📋 プロンプト</button>
-          <button class="del-btn">🗑 削除</button>
-        </div>`;
+      const d = new Date(c.updatedAt).toLocaleDateString('ja-JP');
+      const ml = c.mode === 'photo' ? '📷実写' : '🎨アニメ';
+      const note = c.notes ? '- ' + escHtml(c.notes) : '';
+      item.innerHTML = `<div class="saved-item-name">${escHtml(c.name)} ${ml}</div>
+        <div class="saved-item-meta">${d} ${note}</div>
+        <div class="saved-item-actions"><button class="load-btn">📥</button><button class="prompt-btn">📋</button><button class="del-btn">🗑</button></div>`;
       item.querySelector('.load-btn').addEventListener('click', () => loadCharacter(c));
       item.querySelector('.prompt-btn').addEventListener('click', () => {
-        if (c.promptEn) {
-          navigator.clipboard.writeText(c.promptEn).then(() => showToast('プロンプトをコピーしました！'));
-        } else { showToast('プロンプトがまだ生成されていません'); }
+        if (c.promptEn) navigator.clipboard.writeText(c.promptEn).then(() => showToast('コピーしました！'));
+        else showToast('プロンプト未生成');
       });
       item.querySelector('.del-btn').addEventListener('click', async () => {
-        if (confirm(`「${c.name}」を削除しますか？`)) {
-          await deleteCharacter(c.id); showToast('削除しました');
-          showSavedList(); loadMyPresets();
-        }
+        if (confirm(`「${c.name}」を削除？`)) { await deleteCharacter(c.id); showToast('削除'); showSavedList(); loadMyPresets(); }
       });
       list.appendChild(item);
     });
@@ -423,51 +471,23 @@ function loadCharacter(c) {
   showToast(`「${c.name}」を読み込みました！`);
 }
 
-// === エクスポート（全キャラをJSONダウンロード） ===
-async function exportAllCharacters() {
+// === エクスポート（db.js呼び出し） ===
+async function doExport() {
   try {
-    const chars = await getAllCharacters();
-    if (chars.length === 0) { showToast('エクスポートするキャラがありません'); return; }
-    const data = { version: '1.1', exportedAt: new Date().toISOString(), characters: chars };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `cps-backup-${new Date().toISOString().slice(0,10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    showToast(`${chars.length}件のキャラをエクスポートしました！📤`);
-  } catch (e) { console.error('エクスポートエラー:', e); showToast('エクスポートに失敗しました'); }
+    const count = await exportAllCharacters();
+    showToast(`${count}件のキャラをエクスポートしました！📤`);
+  } catch (e) { showToast(e.message === 'no data' ? 'エクスポートするキャラがありません' : 'エクスポートに失敗しました'); }
 }
 
-// === インポート（JSONファイルから復元） ===
-async function importCharacters(e) {
-  const file = e.target.files[0];
-  if (!file) return;
+// === インポート（db.js呼び出し） ===
+async function doImport(e) {
+  const file = e.target.files[0]; if (!file) return;
   try {
-    const text = await file.text();
-    const data = JSON.parse(text);
-    // バリデーション
-    if (!data.characters || !Array.isArray(data.characters)) {
-      showToast('無効なファイル形式です'); return;
-    }
-    let count = 0;
-    for (const c of data.characters) {
-      if (c.name && c.values) {
-        await saveCharacter(c);
-        count++;
-      }
-    }
+    const data = JSON.parse(await file.text());
+    const count = await importCharactersFromData(data);
     showToast(`${count}件のキャラをインポートしました！📥`);
-    loadMyPresets();
-    showSavedList(); // 一覧を再表示
-  } catch (err) {
-    console.error('インポートエラー:', err);
-    showToast('インポートに失敗しました');
-  }
-  // ファイル入力リセット（同じファイルを再選択できるように）
+    loadMyPresets(); showSavedList();
+  } catch (err) { showToast('インポートに失敗しました'); }
   e.target.value = '';
 }
 
