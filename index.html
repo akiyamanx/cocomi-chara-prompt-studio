@@ -228,6 +228,14 @@
       <button id="btn-ai-refine" class="accent-btn">✨ AI整形</button>
       <button id="btn-save" class="secondary-btn">💾 キャラ保存</button>
     </div>
+    <!-- v1.6追加 - 背景ありの場合のモード選択 -->
+    <div id="bg-mode-select" class="bg-mode-bar" style="display:none">
+      <p class="bg-mode-label">🏠 背景あり — どう生成する？</p>
+      <div class="bg-mode-btns">
+        <button id="btn-mode-combined" class="mode-select-btn active" data-bgmode="combined">🎬 一発で生成</button>
+        <button id="btn-mode-twostep" class="mode-select-btn" data-bgmode="twostep">🔄 2段階（高品質）</button>
+      </div>
+    </div>
     <div id="output-en" class="output-box" style="display:none">
       <h3>🇬🇧 English Prompt（キャラ）</h3>
       <pre id="prompt-en"></pre>
@@ -257,6 +265,25 @@
       <h3>🎬 Combined Prompt（キャラ＋背景）</h3>
       <pre id="prompt-combined"></pre>
       <button class="copy-btn" data-target="prompt-combined">📋 コピー</button>
+    </div>
+    <!-- v1.6追加 - 2段階生成モード -->
+    <div id="output-twostep" class="output-box twostep-box" style="display:none">
+      <h3>🔄 2段階で高品質生成</h3>
+      <div class="step-guide">
+        <div class="step-card">
+          <div class="step-badge">📌 Step 1</div>
+          <p class="step-desc">これをコピーしてNano Bananaに貼ってね</p>
+          <pre id="prompt-step1"></pre>
+          <button class="copy-btn" data-target="prompt-step1">📋 Step1をコピー</button>
+        </div>
+        <div class="step-arrow">⬇ 背景画像を保存したら次へ ⬇</div>
+        <div class="step-card">
+          <div class="step-badge">📌 Step 2</div>
+          <p class="step-desc">新しいチャットで背景画像を添付してからこれを貼ってね</p>
+          <pre id="prompt-step2"></pre>
+          <button class="copy-btn" data-target="prompt-step2">📋 Step2をコピー</button>
+        </div>
+      </div>
     </div>
     <div id="output-ja" class="output-box" style="display:none">
       <h3>🇯🇵 日本語メモ</h3>
@@ -298,7 +325,7 @@
   <div id="toast" class="toast"></div>
 
   <footer>
-    <p>COCOMI CharaPrompt Studio v1.5 🔮 COCOMIファミリー</p>
+    <p>COCOMI CharaPrompt Studio v1.6 🔮 COCOMIファミリー</p>
   </footer>
 
   <script src="presets.js"></script>

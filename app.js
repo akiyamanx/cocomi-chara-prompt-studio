@@ -326,6 +326,8 @@ function generatePrompt() {
   } else { el('output-combined').style.display = 'none'; }
   el('output-en').scrollIntoView({ behavior: 'smooth', block: 'start' });
   showToast('プロンプトを生成しました！🚀');
+  // v1.6追加 - 背景有無に応じてモード選択バーを表示
+  if (typeof updateBgModeVisibility === 'function') updateBgModeVisibility();
 }
 
 // === フィールドラベル検索 ===
@@ -344,22 +346,17 @@ function resetAll() {
   document.querySelectorAll('.field-select').forEach(sel => sel.value = '');
   selectedAccessories.clear(); selectedCharms.clear();
   document.querySelectorAll('.tag-item').forEach(btn => btn.classList.remove('selected'));
-  ['output-en','output-ja','output-bg','output-combined','output-neg','output-ai','output-ai-neg'].forEach(id => el(id).style.display = 'none');
-  // 一貫性リセット
+  ['output-en','output-ja','output-bg','output-combined','output-neg','output-ai','output-ai-neg','output-twostep'].forEach(id => el(id).style.display = 'none');
+  const bgBar = el('bg-mode-select'); if (bgBar) bgBar.style.display = 'none';
   el('ck-same-face').checked = true;
   ['ck-same-hair','ck-same-outfit','ck-same-eyes','ck-correct-hands'].forEach(id => el(id).checked = false);
-  // 品質ブースターリセット
   el('ck-masterpiece').checked = true; el('ck-detailed').checked = true; el('ck-sharp').checked = false;
-  // ネガティブリセット
   el('neg-anatomy').checked = true; el('neg-quality').checked = true;
   ['neg-watermark','neg-deform','neg-duplicate'].forEach(id => el(id).checked = false);
-  // ウェイトリセット
   ['w-eyes','w-hair','w-outfit','w-expr'].forEach(id => {
     el(id).value = '1.0'; el(id + '-val').textContent = '1.0';
   });
-  // アスペクト比リセット
   document.querySelectorAll('.aspect-btn').forEach((b,i) => b.classList.toggle('active', i === 0));
-  // 自由入力クリア
   el('custom-prompt').value = '';
   showToast('リセットしました');
 }
