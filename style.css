@@ -85,15 +85,24 @@ body {
 }
 
 /* プリセットボタン */
-.preset-btns { display:flex; gap:8px; margin-top:8px; }
+.preset-btns { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
 .preset-btn {
-  flex:1; padding: 10px 6px; border-radius: 10px; border: 2px solid var(--border);
+  flex:1; min-width: 80px; padding: 10px 6px; border-radius: 10px;
+  border: 2px solid var(--border);
   background: transparent; color: var(--text); font-size: 0.82rem;
   font-weight: 600; cursor: pointer; transition: all 0.25s;
 }
 .preset-btn.cocomi:active { border-color: var(--cyan); background: rgba(111,213,208,0.15); }
 .preset-btn.oneechan:active { border-color: #b8c4e0; background: rgba(184,196,224,0.15); }
 .preset-btn.kuro:active { border-color: #9b6db8; background: rgba(155,109,184,0.15); }
+.preset-btn.mychar {
+  border-style: dashed; border-color: var(--gold); color: var(--gold);
+}
+.preset-btn.mychar:active { background: rgba(232,197,104,0.15); }
+.preset-btn.mychar-saved {
+  border-color: var(--pink); color: var(--text);
+}
+.preset-btn.mychar-saved:active { border-color: var(--pink); background: rgba(224,123,171,0.15); }
 
 /* セレクトボックス */
 .field-row { margin-bottom: 10px; }

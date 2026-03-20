@@ -46,6 +46,10 @@
       <button class="preset-btn oneechan" data-preset="oneechan">🤍 お姉ちゃん</button>
       <button class="preset-btn kuro" data-preset="kuro">💜 クロちゃん</button>
     </div>
+    <h2 class="section-title" style="margin-top:12px">⭐ マイキャラ</h2>
+    <div id="my-presets" class="preset-btns">
+      <button id="btn-add-mypreset" class="preset-btn mychar">＋ 新しいキャラ</button>
+    </div>
   </section>
 
   <!-- メインフォーム - 各セクション -->
@@ -121,6 +125,12 @@
       <h2 class="section-title" data-toggle="charm">✨ チャームポイント <span class="toggle-icon">▼</span></h2>
       <div class="section-body" id="sec-charm"></div>
     </section>
+
+    <!-- 背景デザイナー -->
+    <section class="card" data-category="bgdesign">
+      <h2 class="section-title" data-toggle="bgdesign">🏠 背景デザイナー <span class="toggle-icon">▼</span></h2>
+      <div class="section-body" id="sec-bgdesign"></div>
+    </section>
   </main>
 
   <!-- キャラ一貫性オプション -->
@@ -142,9 +152,19 @@
       <button id="btn-save" class="secondary-btn">💾 キャラ保存</button>
     </div>
     <div id="output-en" class="output-box" style="display:none">
-      <h3>🇬🇧 English Prompt</h3>
+      <h3>🇬🇧 English Prompt（キャラ）</h3>
       <pre id="prompt-en"></pre>
       <button class="copy-btn" data-target="prompt-en">📋 コピー</button>
+    </div>
+    <div id="output-bg" class="output-box" style="display:none">
+      <h3>🏠 Background Prompt（背景のみ）</h3>
+      <pre id="prompt-bg"></pre>
+      <button class="copy-btn" data-target="prompt-bg">📋 コピー</button>
+    </div>
+    <div id="output-combined" class="output-box" style="display:none">
+      <h3>🎬 Combined Prompt（キャラ＋背景）</h3>
+      <pre id="prompt-combined"></pre>
+      <button class="copy-btn" data-target="prompt-combined">📋 コピー</button>
     </div>
     <div id="output-ja" class="output-box" style="display:none">
       <h3>🇯🇵 日本語メモ</h3>
@@ -185,6 +205,7 @@
   </footer>
 
   <script src="presets.js"></script>
+  <script src="bg-data.js"></script>
   <script src="db.js"></script>
   <script src="app.js"></script>
   <script>

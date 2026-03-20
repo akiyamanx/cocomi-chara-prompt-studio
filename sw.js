@@ -1,13 +1,14 @@
 // COCOMI CharaPrompt Studio (CPS) - Service Worker v1.0
 // PWAオフライン対応・キャッシュ管理
 
-const CACHE_NAME = 'cps-v1.0';
+const CACHE_NAME = 'cps-v1.1';
 const ASSETS = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './presets.js',
+  './bg-data.js',
   './db.js',
   './manifest.json',
   './icon.svg'
